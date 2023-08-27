@@ -631,6 +631,72 @@ class ConfigScreenComponent extends React.Component<any, any> {
 					{descriptionComp}
 				</div>
 			);
+		} else if (md.type === Setting.TYPE_ARRAY) {
+			const inputStyleFirst: any = { ...textInputBaseStyle };
+			const inputStyle: any = { ...textInputBaseStyle, marginTop: '5px' };
+
+			const onTextChange = (event: any, index: number) => {
+				const array = [...this.state.settings[key]];
+				array[index] = event.target.value;
+				updateSettingValue(key, array);
+			};
+
+			const onTextAdd = () => {
+				const array = [...this.state.settings[key]];
+				array.push('');
+				updateSettingValue(key, array);
+			};
+
+			const onTextDelete = (index: number) => {
+				const array = [...this.state.settings[key]];
+				array.splice(index, 1);
+				updateSettingValue(key, array);
+			};
+
+			const items: any[] = [];
+
+			for (const [index, settingValue] of this.state.settings[key].entries()) {
+				items.push(
+					<div key={index}>
+						<input
+							type="text"
+							style={index ? inputStyle : inputStyleFirst}
+							value={settingValue}
+							onChange={(event: any) => {
+								onTextChange(event, index);
+							}}
+							spellCheck={false}
+						/>
+						<button style={{ marginLeft: '5px' }} onClick={() => {
+							onTextDelete(index);
+						}}>x</button>
+					</div>
+				);
+			}
+
+			const addButtonStyle = {
+				width: inputStyle.width,
+				minWidth: inputStyle.minWidth,
+				marginTop: '5px',
+			};
+			return (
+				<div key={key} style={rowStyle}>
+					<div style={labelStyle}>
+						<label>{md.label()}</label>
+					</div>
+					<div style={{ display: 'grid' }}>
+						{items}
+						<div>
+							<button style={addButtonStyle} onClick={() => {
+								onTextAdd();
+							}}>+</button>
+						</div>
+					</div>
+					<div style={{ width: inputStyle.width, minWidth: inputStyle.minWidth }}>
+						{descriptionComp}
+					</div>
+				</div>
+			);
 		} else {
 			console.warn(`Type not implemented: ${key}`);
 		}
